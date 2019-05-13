@@ -1,6 +1,6 @@
-# `custom-ts-webpack-app`
+# `custom-esnext-webpack-app`
 
-This project is bootstrapped by [aurelia-cli](https://github.com/aurelia/cli)
+This project is bootstrapped by [aurelia-cli](https://github.com/aurelia/cli).
 
 For more information, go to https://aurelia.io/docs/cli/webpack
 
