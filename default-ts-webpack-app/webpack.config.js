@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
 const project = require('./aurelia_project/aurelia.json');
 const { AureliaPlugin, ModuleDependenciesPlugin } = require('aurelia-webpack-plugin');
-const { ProvidePlugin } = require('webpack');
+const { HotModuleReplacementPlugin, ProvidePlugin } = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 // config helpers:
@@ -24,7 +24,7 @@ const cssRules = [
   { loader: 'css-loader' },
 ];
 
-module.exports = ({ production, server, extractCss, coverage, analyze, karma } = {}) => ({
+module.exports = ({ production, extractCss, analyze, tests, hmr } = {}) => ({
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [srcDir, 'node_modules'],
@@ -104,7 +104,8 @@ module.exports = ({ production, server, extractCss, coverage, analyze, karma } =
   devServer: {
     contentBase: outDir,
     // serve index.html for all 404 (required for push-state)
-    historyApiFallback: true
+    historyApiFallback: true,
+    hot: hmr
   },
   devtool: production ? 'nosources-source-map' : 'cheap-module-eval-source-map',
   module: {
@@ -135,7 +136,7 @@ module.exports = ({ production, server, extractCss, coverage, analyze, karma } =
       { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/i, loader: 'url-loader', options: { limit: 10000, mimetype: 'application/font-woff' } },
       // load these fonts normally, as files:
       { test: /\.(ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i, loader: 'file-loader' },
-      ...when(coverage, {
+      ...when(tests, {
         test: /\.[jt]s$/i, loader: 'istanbul-instrumenter-loader',
         include: srcDir, exclude: [/\.(spec|test)\.[jt]s$/i],
         enforce: 'post', options: { esModules: true },
@@ -143,7 +144,7 @@ module.exports = ({ production, server, extractCss, coverage, analyze, karma } =
     ]
   },
   plugins: [
-    ...when(!karma, new DuplicatePackageCheckerPlugin()),
+    ...when(!tests, new DuplicatePackageCheckerPlugin()),
     new AureliaPlugin(),
     new ProvidePlugin({
     }),
@@ -154,7 +155,7 @@ module.exports = ({ production, server, extractCss, coverage, analyze, karma } =
       template: 'index.ejs',
       metadata: {
         // available in index.ejs //
-        title, server, baseUrl
+        title, baseUrl
       }
     }),
     // ref: https://webpack.js.org/plugins/mini-css-extract-plugin/
@@ -162,8 +163,9 @@ module.exports = ({ production, server, extractCss, coverage, analyze, karma } =
       filename: production ? 'css/[name].[contenthash].bundle.css' : 'css/[name].[hash].bundle.css',
       chunkFilename: production ? 'css/[name].[contenthash].chunk.css' : 'css/[name].[hash].chunk.css'
     })),
-    ...when(production || server, new CopyWebpackPlugin([
+    ...when(!tests, new CopyWebpackPlugin([
       { from: 'static', to: outDir, ignore: ['.*'] }])), // ignore dot (hidden) files
-    ...when(analyze, new BundleAnalyzerPlugin())
+    ...when(analyze, new BundleAnalyzerPlugin()),
+    ...when(hmr, new HotModuleReplacementPlugin()),
   ]
 });

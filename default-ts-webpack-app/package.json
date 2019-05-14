@@ -53,8 +53,10 @@
     "@types/jest": "^24.0.9"
   },
   "scripts": {
-    "build": "au build",
-    "start": "au run",
+    "build": "webpack --env.production --env.extractCss",
+    "build:dev": "webpack --env.extractCss",
+    "analyze": "webpack --env.analyze",
+    "start": "webpack-dev-server --env.extractCss --env.hmr",
     "test": "au test"
   },
   "engines": {
