@@ -14,7 +14,7 @@ Run ~~`au run`~~ `npm start`, then open `http://localhost:8080`
 
 ~~To change dev server port, do `au run --port 8888`.~~
 
-You can still change the standard webpack configurations from CLI easily with something like this: `npm start -- --open --port 8888`. If you have settled from your fling, change the `npm start` script with the new arguments, and you are back to the comfort of `npm start`.
+You can still change the standard webpack configurations from CLI easily with something like this: `npm start -- --open --port 8888`. If you have settled from your fling, change the `npm start` script with the new arguments or even better the `webpack.config.js`, and you are back to the comfort of `npm start`.
 
 To enable Webpack Bundle Analyzer, do ~~`au run --analyze`~~ `npm run analyze` (for development build) or `npm run analyze -- --env.production` (for production build).
 
